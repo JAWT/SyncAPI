@@ -55,14 +55,17 @@ exports.packet = util.Class.extend({
                     this.data = {};
                 },
     stringify:  function() {
-                    return JSON.stringify({
+                    return JSON.stringify(this.build());
+                },
+    build:      function() {
+                    return {
                         body: this.data,
                         head: {
                             type: this.type,
                             method: this.method,
                             id: this.id
                         }
-                    });
+                    };
                 },
     set:        function(key, value) {
                     this.data[key] = value;

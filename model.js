@@ -1,6 +1,8 @@
 var packets = require('./packets');
 var util = require('./util.js');
 
+var debug = true;
+
 exports.User = util.Class.extend({
     init:           function(connection) {
                         this.connection = connection;
@@ -9,6 +11,11 @@ exports.User = util.Class.extend({
                         this.send(new packets.time());
                     },
     onMessage:      function(message) {
+                        if(debug) {
+                            console.log("< received from " + this.connection.remoteAddress);
+                            console.log(message);
+                            console.log();
+                        }
                         if(message.method == packets.methods.response) {
                             message.request = this.requests[message.id];
                             if(message.request == undefined) {
@@ -43,6 +50,11 @@ exports.User = util.Class.extend({
                             packet.id = this.nextId += 2;
                         }
                         this.connection.sendUTF(packet.stringify());
+                        if(debug) {
+                            console.log("> sent to " + this.connection.remoteAddress);
+                            console.log(packet.build());
+                            console.log();
+                        }
                         if(packet.method == packets.methods.request) {
                             this.requests[packet.id] = packet;
                         }
