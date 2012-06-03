@@ -36,7 +36,7 @@ exports.User = util.Class.extend({
                                 console.log(e);
                                 e = util.error.internal_error;
                             }
-                            this.send(new packets.error(e));
+                            this.send(message.respond(new packets.error(e)));
                         }
                     },
     onDisconnect:   function() {
