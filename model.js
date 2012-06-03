@@ -13,7 +13,7 @@ exports.User = util.Class.extend({
     onMessage:      function(message) {
                         if(debug) {
                             console.log("< received from " + this.connection.remoteAddress);
-                            console.log(message);
+                            console.log(message.build());
                             console.log();
                         }
                         if(message.method == packets.methods.response) {
