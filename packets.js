@@ -49,7 +49,7 @@ exports.PacketHandler = util.Class.extend({
 
 exports.packet = util.Class.extend({
     init:       function(type, method, id) {
-                    this.type = type;
+                    this.type = type.toLowerCase();
                     this.method = method || exports.methods.message;
                     this.id = id;
                     this.data = {};
