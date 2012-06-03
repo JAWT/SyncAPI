@@ -50,7 +50,7 @@ exports.PacketHandler = util.Class.extend({
 exports.packet = util.Class.extend({
     init:       function(type, method, id) {
                     this.type = type;
-                    this.method = method;
+                    this.method = method || exports.methods.message;
                     this.id = id;
                     this.data = {};
                 },
@@ -66,18 +66,35 @@ exports.packet = util.Class.extend({
                 },
     set:        function(key, value) {
                     this.data[key] = value;
-                    return this
+                    return this;
+                },
+    get:        function(key) {
+                    return this.data[key];
                 },
     respond:    function(packet) {
                     packet.id = this.id;
                     packet.method = exports.methods.response;
                     return packet;
+                },
+    assert:     function(field, type) {
+                    if(typeof field == "string") {
+                        if(this.get(field) == undefined) {
+                            throw new util.Exception(util.missingField(field));
+                        }
+                        if(typeof this.get(field) != type) {
+                            throw new util.Exception(util.wrongType(field, type));
+                        }
+                    } else {
+                        for(var i in field) {
+                            this.assert(field[i], type);
+                        }
+                    }
                 }
 });
 
 exports.error = exports.packet.extend({
     init:       function(error) {
-                    this._super(exports.methods.message, exports.types.error);
+                    this._super(exports.types.error);
                     this.set('code', error[0]);
                     this.set('text', error[1]);
                 }
@@ -85,7 +102,32 @@ exports.error = exports.packet.extend({
 
 exports.new_session = exports.packet.extend({
     init:       function(id) {
-                    this._super(exports.methods.response, exports.types.new_session);
+                    this._super(exports.types.new_session);
                     this.set('id', id);
+                }
+});
+
+exports.join_session = exports.packet.extend({
+    init:       function() {
+                    this._super(exports.types.join_session);
+                }
+});
+
+exports.ward = exports.packet.extend({
+    init:       function(ward) {
+                    this._super(exports.types.ward);
+                    this.set('id', ward.id);
+                    this.set('x', ward.x);
+                    this.set('y', ward.y);
+                    this.set('allied', ward.allied);
+                    this.set('vision', ward.vision);
+                    this.set('time', ward.time);
+                }
+});
+
+exports.time = exports.packet.extend({
+    init:       function() {
+                    this._super(exports.types.time, exports.methods.request);
+                    this.time = (new Date()).getTime();
                 }
 });
