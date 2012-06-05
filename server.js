@@ -1,6 +1,6 @@
 var util = require('./util.js')
-var model = require('./model.js');
-var packets = require('./packets.js');
+var User = require('./user.js').User;
+var packets = require('./packet.js');
 
 var debug = true;
 
@@ -8,7 +8,7 @@ util.createServer(1337, handleConnection)
 
 function handleConnection(connection) {
     console.log("Connection from " + connection.remoteAddress + " accepted.");
-    var user = new model.User(connection)
+    var user = new User(connection)
 
     connection.addListener('message', function(wsMessage) {
         var message = wsMessage;
@@ -35,7 +35,7 @@ function handleConnection(connection) {
             user.onMessage(packet)
         }
     });
-    
+
     connection.addListener('close', function() {
         user.onDisconnect()
     });

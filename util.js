@@ -80,6 +80,9 @@ exports.error = {
     no_session:     [407, "Not in a game session"],
     response_type:  [408, "Response type mismatches request"],
     missing_time:   [409, "Time offset unknown"],
+    invalid_ward:   [410, "Invalid ward id"],
+    invalid_monster:[411, "Invalid monster id"],
+    invalid_time:   [412, "Time is in the future"],
     internal_error: [500, "Internal error"]
 };
 
