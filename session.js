@@ -76,7 +76,7 @@ exports.Session = util.Class.extend({
                         if(respawn == undefined) {
                             throw new util.Exception(util.error.invalid_monster);
                         }
-                        time += respawn*60*60*1000;
+                        time += respawn*60*1000;
                         this.monsters[id] = time;
                         return time;
                     },
