@@ -1,7 +1,14 @@
 var util = require('./util.js');
 var monster = require('./monster.js');
+var packets = require('./packet.js');
 
 var sessions = {};
+
+setInterval(function() {
+    for(var id in sessions) {
+        sessions[id].keepAlive();
+    }
+}, 30000);
 
 exports.Session = util.Class.extend({
     init:           function() {
@@ -13,7 +20,11 @@ exports.Session = util.Class.extend({
                         this.wards = {};
                         this.monsters = {};
                         this.nextId = 1;
+                        this.touch();
                         console.log("New session: " + this.id);
+                    },
+    touch:          function() {
+                        this.lastActivity = (new Date()).getTime();
                     },
     generateId:     function() {
                         this.id = "";
@@ -31,15 +42,20 @@ exports.Session = util.Class.extend({
                             }
                         }
                     },
+    sendCount:      function() {
+                        var packet = new packets.user_count(this.users.length);
+                        for(var i in this.users) {
+                            this.users[i].send(packet);
+                        }
+                    },
     join:           function(user) {
                         this.users.push(user);
+                        this.sendCount();
                     },
     leave:          function(user) {
                         this.users.splice(this.users.indexOf(user), 1);
-                        if(this.users.length == 0) {
-                            delete sessions[this.id];
-                            console.log("Destroied session: " + this.id);
-                        }
+                        this.touch();
+                        this.sendCount();
                     },
     addWard:        function(ward) {
                         this.cleanup();
@@ -65,6 +81,18 @@ exports.Session = util.Class.extend({
                         for(var id in this.monsters) {
                             if(this.monsters[id] < time) {
                                 delete this.monsters[id];
+                            }
+                        }
+                    },
+    keepAlive:      function() {
+                        if(this.users.length == 0 &&
+                           this.lastActivity + 10*60*1000 < (new Date()).getTime()) {
+                            delete sessions[this.id];
+                            console.log("Destroied session: " + this.id);
+                        } else {
+                            this.cleanup();
+                            for(var i in this.users) {
+                                this.users[i].keepAlive();
                             }
                         }
                     },

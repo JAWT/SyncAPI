@@ -14,7 +14,9 @@ exports.types = {
     ward: "ward",
     remove_ward: "remove_ward",
     kill_monster: "kill_monster",
-    error: "error"
+    error: "error",
+    keep_alive: "keep_alive",
+    user_count: "user_count"
 };
 
 
@@ -162,6 +164,19 @@ exports.kill_monster = exports.packet.extend({
 exports.reset = exports.packet.extend({
     init:       function() {
                     this._super(exports.types.reset);
+                }
+});
+
+exports.user_count = exports.packet.extend({
+    init:       function(count) {
+                    this._super(exports.types.user_count);
+                    this.set('count', count);
+                }
+});
+
+exports.keep_alive = exports.packet.extend({
+    init:       function() {
+                    this._super(exports.types.keep_alive);
                 }
 });
 

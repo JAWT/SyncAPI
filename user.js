@@ -47,7 +47,7 @@ exports.User = util.Class.extend({
                         console.log("User " + this.connection.remoteAddress + " disconnected.");
                     },
     send:           function(packet) {
-                        if(packet.id == undefined) {
+                        if(packet.method != packets.methods.response) {
                             packet.id = this.nextId += 2;
                         }
                         this.connection.sendUTF(packet.stringify());
@@ -66,6 +66,9 @@ exports.User = util.Class.extend({
                         }
                         this.session = session;
                         session.join(this);
+                    },
+    keepAlive:      function() {
+                        this.send(new packets.keep_alive());
                     },
     assertSession:  function() {
                         if(this.session == undefined) {
