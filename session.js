@@ -118,5 +118,5 @@ exports.Session = util.Class.extend({
 });
 
 exports.Session.find = function(id) {
-    return sessions[id];
+    return sessions[id.toLowerCase()];
 }
